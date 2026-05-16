@@ -6,7 +6,44 @@ import yt_dlp
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
+try:
+    from pytubefix import YouTube
+except ImportError:
+    YouTube = None
+
 def extract_info(url):
+    # Try PytubeFix first for YouTube
+    if ('youtube.com' in url or 'youtu.be' in url) and YouTube:
+        try:
+            yt = YouTube(url)
+            # Filter for progressive streams (video + audio in one file)
+            streams = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc()
+            best_stream = streams.first()
+            
+            formats = []
+            for s in streams[:10]:
+                formats.append({
+                    'format_id': s.itag,
+                    'ext': 'mp4',
+                    'resolution': s.resolution,
+                    'url': s.url,
+                    'filesize': s.filesize
+                })
+            
+            return {
+                'success': True,
+                'title': yt.title,
+                'thumbnail': yt.thumbnail_url,
+                'duration': yt.length,
+                'uploader': yt.author,
+                'url': best_stream.url if best_stream else None,
+                'formats': formats
+            }
+        except Exception as e:
+            print(f"Pytubefix error: {e}")
+            # Continue to yt-dlp as fallback
+
+    # Default to yt-dlp for everything else (or as fallback)
     ydl_opts = {
         'format': 'best',
         'quiet': True,
@@ -29,14 +66,11 @@ def extract_info(url):
             'Referer': 'https://www.youtube.com/',
         }
     }
-
-
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(url, download=False)
             
-            # Format results
             formats = []
             for f in info.get('formats', []):
                 if f.get('url') and (f.get('ext') == 'mp4' or f.get('vcodec') != 'none'):
@@ -59,6 +93,7 @@ def extract_info(url):
             }
         except Exception as e:
             return {'success': False, 'error': str(e)}
+
 
 
 
