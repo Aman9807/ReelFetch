@@ -15,8 +15,12 @@ def extract_info(url):
     # Try PytubeFix first for YouTube
     if ('youtube.com' in url or 'youtu.be' in url) and YouTube:
         try:
+            # Use a dummy po_token_verifier to prevent EOFError (interactive input prompt) in non-interactive environments
+            def dummy_po_token_verifier():
+                return "", ""
+                
             # use_po_token=True is required to bypass YouTube's new bot checks!
-            yt = YouTube(url, use_po_token=True)
+            yt = YouTube(url, use_po_token=True, po_token_verifier=dummy_po_token_verifier)
             # Filter for progressive streams (video + audio in one file)
             streams = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc()
             best_stream = streams.first()
@@ -41,7 +45,9 @@ def extract_info(url):
                 'formats': formats
             }
         except Exception as e:
-            return {'success': False, 'error': f"PytubeFix Error: {str(e)}"}
+            # Log the error and fall through to yt-dlp fallback
+            print(f"PytubeFix extraction failed: {str(e)}. Falling back to yt-dlp...")
+            pass
 
     # Default to yt-dlp for everything else (like Instagram)
     ydl_opts = {
