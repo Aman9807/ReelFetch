@@ -15,17 +15,13 @@ def extract_info(url):
         'nocheckcertificate': True,
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'ios', 'web'],
-                'skip': ['hls', 'dash']
+                'player_client': ['web_embedded', 'android', 'ios'],
             }
         },
         'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
         }
     }
-
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
@@ -34,7 +30,6 @@ def extract_info(url):
             # Format results
             formats = []
             for f in info.get('formats', []):
-                # Filter for useful formats with direct URLs
                 if f.get('url') and (f.get('ext') == 'mp4' or f.get('vcodec') != 'none'):
                     formats.append({
                         'format_id': f.get('format_id'),
@@ -50,14 +45,12 @@ def extract_info(url):
                 'thumbnail': info.get('thumbnail'),
                 'duration': info.get('duration'),
                 'uploader': info.get('uploader'),
-                'url': info.get('url'), # Best direct URL
-                'formats': formats[:10] # Return top 10 formats
+                'url': info.get('url'),
+                'formats': formats[:10]
             }
         except Exception as e:
-            error_msg = str(e)
-            if 'Sign in' in error_msg or 'login' in error_msg.lower():
-                return {'success': False, 'error': 'This video is restricted or requires login. Try another video!'}
-            return {'success': False, 'error': error_msg}
+            return {'success': False, 'error': str(e)}
+
 
 
 @app.route('/')
