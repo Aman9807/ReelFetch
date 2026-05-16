@@ -13,15 +13,24 @@ def extract_info(url):
         'no_warnings': True,
         'extract_flat': False,
         'nocheckcertificate': True,
+        'youtube_include_dash_manifest': False,
+        'youtube_include_hls_manifest': False,
         'extractor_args': {
             'youtube': {
-                'player_client': ['web_embedded', 'android', 'ios'],
+                'player_client': ['tv', 'tv_embedded', 'android', 'ios'],
+                'player_skip': ['webpage', 'configs']
             }
         },
         'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (SMART-TV; Linux; Tizen 5.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/2.2 Chrome/63.0.3239.111 TV Safari/537.36',
+            'Accept': '*/*',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Origin': 'https://www.youtube.com',
+            'Referer': 'https://www.youtube.com/',
         }
     }
+
+
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
