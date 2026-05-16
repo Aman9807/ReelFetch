@@ -15,7 +15,8 @@ def extract_info(url):
     # Try PytubeFix first for YouTube
     if ('youtube.com' in url or 'youtu.be' in url) and YouTube:
         try:
-            yt = YouTube(url)
+            # use_po_token=True is required to bypass YouTube's new bot checks!
+            yt = YouTube(url, use_po_token=True)
             # Filter for progressive streams (video + audio in one file)
             streams = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc()
             best_stream = streams.first()
@@ -40,10 +41,9 @@ def extract_info(url):
                 'formats': formats
             }
         except Exception as e:
-            print(f"Pytubefix error: {e}")
-            # Continue to yt-dlp as fallback
+            return {'success': False, 'error': f"PytubeFix Error: {str(e)}"}
 
-    # Default to yt-dlp for everything else (or as fallback)
+    # Default to yt-dlp for everything else (like Instagram)
     ydl_opts = {
         'format': 'best',
         'quiet': True,
@@ -66,6 +66,7 @@ def extract_info(url):
             'Referer': 'https://www.youtube.com/',
         }
     }
+
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
