@@ -12,6 +12,13 @@ def extract_info(url):
         'quiet': True,
         'no_warnings': True,
         'extract_flat': False,
+        'nocheckcertificate': True,
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://www.google.com/',
+        }
     }
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -31,9 +38,6 @@ def extract_info(url):
                         'filesize': f.get('filesize')
                     })
             
-            # Reverse formats to get best quality first if needed, 
-            # or just pick the best direct one info.get('url')
-            
             return {
                 'success': True,
                 'title': info.get('title'),
@@ -41,10 +45,14 @@ def extract_info(url):
                 'duration': info.get('duration'),
                 'uploader': info.get('uploader'),
                 'url': info.get('url'), # Best direct URL
-                'formats': formats[:10] # Return top 10 formats for selection
+                'formats': formats[:10] # Return top 10 formats
             }
         except Exception as e:
-            return {'success': False, 'error': str(e)}
+            error_msg = str(e)
+            if 'Sign in' in error_msg or 'login' in error_msg.lower():
+                return {'success': False, 'error': 'This video is restricted or requires login. Try another video!'}
+            return {'success': False, 'error': error_msg}
+
 
 @app.route('/')
 def index():
