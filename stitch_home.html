@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #051424;
+            color: #d4e4fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .neon-glow {
+            box-shadow: 0 0 20px 2px rgba(168, 85, 247, 0.25);
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(22, 27, 44, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#4d4354",
+                      "tertiary-container": "#bd871a",
+                      "on-tertiary-container": "#3a2600",
+                      "primary-fixed-dim": "#ddb7ff",
+                      "on-primary": "#490080",
+                      "inverse-on-surface": "#233143",
+                      "surface-container": "#122131",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#2c3a4c",
+                      "surface-container-high": "#1c2b3c",
+                      "on-secondary": "#3f008e",
+                      "primary-container": "#b76dff",
+                      "surface-dim": "#051424",
+                      "on-tertiary-fixed-variant": "#604100",
+                      "on-secondary-fixed-variant": "#5a00c6",
+                      "primary-fixed": "#f0dbff",
+                      "tertiary": "#fabc4e",
+                      "primary": "#ddb7ff",
+                      "outline": "#988d9f",
+                      "on-secondary-container": "#c9aeff",
+                      "inverse-primary": "#842bd2",
+                      "background": "#051424",
+                      "secondary-fixed-dim": "#d2bbff",
+                      "surface": "#051424",
+                      "on-surface": "#d4e4fa",
+                      "on-primary-container": "#400071",
+                      "error": "#ffb4ab",
+                      "on-primary-fixed": "#2c0051",
+                      "surface-variant": "#273647",
+                      "on-error": "#690005",
+                      "on-secondary-fixed": "#25005a",
+                      "on-tertiary-fixed": "#281900",
+                      "tertiary-fixed": "#ffdead",
+                      "on-tertiary": "#432c00",
+                      "on-surface-variant": "#cfc2d6",
+                      "secondary": "#d2bbff",
+                      "inverse-surface": "#d4e4fa",
+                      "on-primary-fixed-variant": "#6900b3",
+                      "surface-container-lowest": "#010f1f",
+                      "tertiary-fixed-dim": "#fabc4e",
+                      "secondary-container": "#6001d1",
+                      "surface-tint": "#ddb7ff",
+                      "secondary-fixed": "#eaddff",
+                      "surface-container-low": "#0d1c2d",
+                      "error-container": "#93000a",
+                      "on-background": "#d4e4fa",
+                      "surface-container-highest": "#273647"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "container-max": "1440px",
+                      "margin-desktop": "64px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-md": ["Geist"],
+                      "label-md": ["Geist"],
+                      "headline-lg": ["Geist"],
+                      "body-lg": ["Inter"],
+                      "headline-lg-mobile": ["Geist"],
+                      "headline-xl": ["Geist"],
+                      "label-sm": ["Geist"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Background Decorative Glows -->
+<div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-secondary-container/20 blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary-container/10 blur-[120px] pointer-events-none"></div>
+<!-- TopNavBar -->
+<header class="fixed top-0 z-50 w-full bg-surface/80 backdrop-blur-lg border-b border-white/5">
+<nav class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary tracking-tight">ReelFetch</div>
+<div class="hidden md:flex items-center gap-8 font-body-md text-body-md">
+<a class="text-on-surface-variant hover:text-on-surface transition-all duration-200" href="#">Features</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-all duration-200" href="#">How it Works</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-all duration-200" href="#">Support</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-variant/50 p-2 rounded-full transition-all duration-200">settings</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-variant/50 p-2 rounded-full transition-all duration-200">account_circle</button>
+<button class="hidden md:block bg-primary text-on-primary-container px-6 py-2 rounded-full font-label-md hover:brightness-110 active:scale-95 transition-all">Get Started</button>
+</div>
+</nav>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center pt-32 pb-16 px-margin-mobile">
+<!-- Hero Section -->
+<section class="max-w-4xl w-full text-center space-y-8 relative">
+<div class="space-y-4">
+<span class="inline-block font-label-md text-primary tracking-[0.2em] uppercase bg-primary-container/10 px-4 py-1 rounded-full border border-primary/20">Next-Gen Downloader</span>
+<h1 class="font-headline-xl text-headline-xl text-on-surface leading-tight">
+                    Cinematic Precision in Every Download.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    ReelFetch allows you to save your favorite content in high resolution with a single click. Experience lightning-fast speeds and crisp quality.
+                </p>
+</div>
+<!-- Search & Action Area -->
+<div class="mt-12 w-full max-w-3xl mx-auto space-y-6">
+<div class="glass-panel p-2 rounded-2xl flex flex-col md:flex-row items-center gap-2 group transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/30">
+<div class="flex-grow flex items-center px-4 w-full">
+<span class="material-symbols-outlined text-outline mr-3">link</span>
+<input class="w-full bg-transparent border-none text-on-surface placeholder:text-outline focus:ring-0 font-body-md py-4" placeholder="Paste your video URL here..." type="text"/>
+</div>
+<button class="w-full md:w-auto bg-gradient-to-r from-[#A855F7] to-[#7C3AED] text-white px-10 py-4 rounded-xl font-headline-md neon-glow hover:brightness-110 active:scale-98 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">download</span>
+                        Download
+                    </button>
+</div>
+<div class="flex flex-wrap justify-center gap-6 text-on-surface-variant font-label-sm">
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> 4K Resolution Support</div>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> No Watermarks</div>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span> Fast Processing</div>
+</div>
+</div>
+</section>
+<!-- Visual Bento Grid for Features -->
+<section class="mt-32 w-full max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-12 gap-gutter px-margin-desktop">
+<div class="md:col-span-8 h-[400px] glass-panel rounded-3xl overflow-hidden group relative">
+<img class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A professional film editing suite with multiple glowing monitors displaying high-resolution cinematic video footage of a misty mountain range. The room is dimly lit in deep navy and purple tones, reflecting the high-performance ReelFetch aesthetic. Vibrant neon accents highlight the cutting-edge technology and precision of the workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArBpXHVmBf-S7MmdgGbjdNpthh1ea6HC7q0ASMro0YlpsojzUuDOkhdeaqLat_is0eoHePwPeHuHzKLq2NNDLxWtSEWZIrbxHyBaxNqd3X69YXd3ZXqFD25JafpUqiDpvYP3KVtBW67_6NReEJ6w7GS89ZJzPBb2CpK07AteO48lXCuanN3uRpqqjXnULuzfCpitf6AmoUEMi-HZ_UT-yC3d2A-jvwhCx4mMUgzctxDa_HVXRHpQLAba4luy0RGZ8Cyr9R_j6wpDk"/>
+<div class="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-background to-transparent">
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-2">Ultra-HD Playback</h3>
+<p class="font-body-md text-on-surface-variant max-w-md">Download content exactly as it was meant to be seen, preserving every pixel and frame.</p>
+</div>
+</div>
+<div class="md:col-span-4 h-[400px] glass-panel rounded-3xl p-8 flex flex-col justify-between hover:bg-surface-variant/30 transition-all duration-300">
+<div class="bg-primary-container/20 w-16 h-16 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-4xl">speed</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Lightning Fast</h3>
+<p class="font-body-sm text-on-surface-variant">Powered by a proprietary distribution engine that maximizes your bandwidth for near-instant downloads.</p>
+</div>
+</div>
+<div class="md:col-span-4 h-[300px] glass-panel rounded-3xl p-8 flex flex-col justify-center items-center text-center group hover:border-primary/30">
+<span class="material-symbols-outlined text-5xl text-tertiary mb-4 group-hover:scale-110 transition-transform">security</span>
+<h4 class="font-headline-md text-on-surface mb-2">Private &amp; Secure</h4>
+<p class="font-body-sm text-on-surface-variant">Your downloads are encrypted and ephemeral. We never store your link history or personal data.</p>
+</div>
+<div class="md:col-span-8 h-[300px] glass-panel rounded-3xl overflow-hidden relative group">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+<div class="relative h-full flex items-center px-12 gap-8">
+<div class="hidden sm:block w-32 h-32 rounded-full border-4 border-primary/20 border-t-primary animate-[spin_3s_linear_infinite]"></div>
+<div>
+<h4 class="font-headline-md text-on-surface mb-2">Auto-Format Detection</h4>
+<p class="font-body-sm text-on-surface-variant">Intelligent AI parsing detects the best available quality across MP4, MKV, and WebM formats automatically.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="mt-32 w-full max-w-4xl mx-auto px-margin-mobile text-center">
+<div class="p-12 rounded-[2rem] bg-gradient-to-br from-surface-container-high to-surface-container relative overflow-hidden border border-white/5">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">Ready for the ultimate experience?</h2>
+<p class="font-body-md text-on-surface-variant mb-8 max-w-lg mx-auto">Join thousands of creators who rely on ReelFetch for their media workflow.</p>
+<button class="bg-primary text-on-primary-container px-10 py-4 rounded-xl font-label-md hover:brightness-110 transition-all">Create Free Account</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5">
+<div class="flex flex-col md:flex-row justify-between items-center py-margin-mobile px-margin-desktop w-full max-w-container-max mx-auto gap-4">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-headline-md text-headline-md font-bold text-primary">ReelFetch</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-80">© 2024 ReelFetch. Cinematic precision in every download.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">API</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Github</a>
+</div>
+</div>
+</footer>
+</body></html>
