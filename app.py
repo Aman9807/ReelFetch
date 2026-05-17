@@ -70,6 +70,10 @@ def extract_info(url):
             'Referer': 'https://www.youtube.com/',
         }
     }
+    
+    # Bypass Vercel IP Block using cookies if provided
+    if os.path.exists('cookies.txt'):
+        ydl_opts['cookiefile'] = 'cookies.txt'
 
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
