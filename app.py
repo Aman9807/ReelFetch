@@ -15,12 +15,8 @@ def extract_info(url):
     # Try PytubeFix first for YouTube
     if ('youtube.com' in url or 'youtu.be' in url) and YouTube:
         try:
-            # Use a dummy po_token_verifier to prevent EOFError (interactive input prompt) in non-interactive environments
-            def dummy_po_token_verifier():
-                return "", ""
-                
-            # use_po_token=True is required to bypass YouTube's new bot checks!
-            yt = YouTube(url, use_po_token=True, po_token_verifier=dummy_po_token_verifier)
+            # Use the ANDROID client instead of WEB to bypass bot detection without needing a po_token
+            yt = YouTube(url, client='WEB_CREATOR')
             # Filter for progressive streams (video + audio in one file)
             streams = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc()
             best_stream = streams.first()
@@ -60,7 +56,9 @@ def extract_info(url):
         'youtube_include_hls_manifest': False,
         'extractor_args': {
             'youtube': {
-                'player_client': ['tv', 'tv_embedded', 'android', 'ios'],
+                # 'tv' clients are currently blocked and trigger the "Sign in to confirm" bot error. 
+                # Using android, ios, and web_creator clients bypasses this.
+                'player_client': ['android', 'ios', 'web_creator'],
                 'player_skip': ['webpage', 'configs']
             }
         },
