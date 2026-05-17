@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect
 from flask_cors import CORS
 import yt_dlp
 
@@ -109,6 +109,10 @@ def extract_info(url):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return redirect('https://flynx.site/app-sites/reelfetch/about')
 
 @app.route('/api/extract', methods=['POST'])
 def api_extract():
