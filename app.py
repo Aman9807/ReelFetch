@@ -1,4 +1,9 @@
 import os
+import random
+import re
+import json
+import urllib.request
+import urllib.error
 from flask import Flask, request, jsonify, render_template, redirect
 from flask_cors import CORS
 import yt_dlp
@@ -11,7 +16,130 @@ try:
 except ImportError:
     YouTube = None
 
+def get_working_cobalt_apis():
+    req = urllib.request.Request('https://cobalt.directory/api/working?type=api', headers={'User-Agent': 'Mozilla/5.0'})
+    try:
+        res = urllib.request.urlopen(req, timeout=5)
+        data = json.loads(res.read().decode())
+        apis = set()
+        for service, list_apis in data.get('data', {}).items():
+            for api in list_apis:
+                apis.add(api)
+        return list(apis)
+    except Exception as e:
+        print(f"Error fetching cobalt list, using defaults: {e}")
+        return [
+            'https://api.dl.woof.monster/',
+            'https://nuko-c.meowing.de/',
+            'https://api.cobalt.blackcat.sweeux.org/',
+            'https://cobaltapi.kittycat.boo/',
+            'https://grapefruit.clxxped.lol/',
+            'https://melon.clxxped.lol/',
+            'https://dog.kittycat.boo/',
+            'https://cobaltapi.squair.xyz/'
+        ]
+
+def extract_youtube_id(url):
+    pattern = r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})'
+    match = re.search(pattern, url)
+    return match.group(1) if match else None
+
+def cobalt_extract(url):
+    apis = get_working_cobalt_apis()
+    random.shuffle(apis)
+    
+    for api in apis:
+        if not api.endswith('/'):
+            api += '/'
+            
+        print(f"Trying Cobalt endpoint: {api}")
+        req = urllib.request.Request(
+            api,
+            data=json.dumps({
+                'url': url,
+                'videoQuality': '1080',
+            }).encode(),
+            headers={
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0'
+            }
+        )
+        try:
+            res = urllib.request.urlopen(req, timeout=8)
+            resp = json.loads(res.read().decode())
+            status = resp.get('status')
+            
+            if status == 'error':
+                print(f"Endpoint {api} returned error: {resp.get('error')}")
+                continue
+                
+            title = resp.get('filename') or 'ReelFetch Video'
+            if '.' in title:
+                title = '.'.join(title.split('.')[:-1])
+                
+            thumbnail = 'https://via.placeholder.com/320x180?text=ReelFetch+Video'
+            if 'youtube.com' in url or 'youtu.be' in url:
+                yt_id = extract_youtube_id(url)
+                if yt_id:
+                    thumbnail = f'https://img.youtube.com/vi/{yt_id}/hqdefault.jpg'
+                    
+            formats = []
+            
+            if status in ('tunnel', 'redirect'):
+                download_url = resp.get('url')
+                formats.append({
+                    'format_id': 'best',
+                    'ext': 'mp4',
+                    'resolution': 'Best Quality (Auto)',
+                    'url': download_url,
+                    'filesize': None
+                })
+                return {
+                    'success': True,
+                    'title': title,
+                    'thumbnail': thumbnail,
+                    'duration': None,
+                    'uploader': 'ReelFetch CDN',
+                    'url': download_url,
+                    'formats': formats
+                }
+                
+            elif status == 'picker':
+                picker_items = resp.get('picker', [])
+                for i, item in enumerate(picker_items):
+                    formats.append({
+                        'format_id': f'item_{i}',
+                        'ext': item.get('type') or 'mp4',
+                        'resolution': f'Item {i+1} ({item.get("type", "media")})',
+                        'url': item.get('url'),
+                        'filesize': None
+                    })
+                return {
+                    'success': True,
+                    'title': title,
+                    'thumbnail': picker_items[0].get('thumb') or thumbnail if picker_items else thumbnail,
+                    'duration': None,
+                    'uploader': 'ReelFetch Carousel',
+                    'url': picker_items[0].get('url') if picker_items else None,
+                    'formats': formats
+                }
+                
+        except Exception as e:
+            print(f"Endpoint {api} failed: {e}")
+            
+    return None
+
 def extract_info(url):
+    # Try Cobalt first for robust, high-speed extraction bypassing bot blocks
+    print(f"Attempting dynamic Cobalt extraction for: {url}")
+    cobalt_res = cobalt_extract(url)
+    if cobalt_res and cobalt_res.get('success'):
+        print("Cobalt extraction succeeded!")
+        return cobalt_res
+        
+    print("Cobalt extraction failed. Falling back to local extractors...")
+
     # Try PytubeFix first for YouTube
     if ('youtube.com' in url or 'youtu.be' in url) and YouTube:
         try:
