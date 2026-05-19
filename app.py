@@ -48,7 +48,10 @@ def cobalt_extract(url):
     apis = get_working_cobalt_apis()
     random.shuffle(apis)
     
-    for api in apis:
+    # Try a maximum of 4 instances to prevent Vercel timeout (Hobby limit is 10s)
+    apis_to_try = apis[:4]
+    
+    for api in apis_to_try:
         if not api.endswith('/'):
             api += '/'
             
@@ -66,7 +69,7 @@ def cobalt_extract(url):
             }
         )
         try:
-            res = urllib.request.urlopen(req, timeout=8)
+            res = urllib.request.urlopen(req, timeout=6)
             resp = json.loads(res.read().decode())
             status = resp.get('status')
             
@@ -84,17 +87,31 @@ def cobalt_extract(url):
                 if yt_id:
                     thumbnail = f'https://img.youtube.com/vi/{yt_id}/hqdefault.jpg'
                     
-            formats = []
-            
             if status in ('tunnel', 'redirect'):
                 download_url = resp.get('url')
-                formats.append({
+                if not download_url:
+                    continue
+                
+                # Verify that this download URL actually serves bytes (isn't a 0kb blocked tunnel)
+                try:
+                    chk_req = urllib.request.Request(download_url, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(chk_req, timeout=4) as chk_res:
+                        first_byte = chk_res.read(1)
+                        if not first_byte:
+                            print(f"Endpoint {api} returned 0-byte stream, skipping.")
+                            continue
+                        print(f"Verified working endpoint: {api}")
+                except Exception as verify_err:
+                    print(f"Endpoint {api} download verification failed: {verify_err}, skipping.")
+                    continue
+
+                formats = [{
                     'format_id': 'best',
                     'ext': 'mp4',
                     'resolution': 'Best Quality (Auto)',
                     'url': download_url,
                     'filesize': None
-                })
+                }]
                 return {
                     'success': True,
                     'title': title,
@@ -107,23 +124,41 @@ def cobalt_extract(url):
                 
             elif status == 'picker':
                 picker_items = resp.get('picker', [])
+                valid_formats = []
                 for i, item in enumerate(picker_items):
-                    formats.append({
-                        'format_id': f'item_{i}',
-                        'ext': item.get('type') or 'mp4',
-                        'resolution': f'Item {i+1} ({item.get("type", "media")})',
-                        'url': item.get('url'),
-                        'filesize': None
-                    })
-                return {
-                    'success': True,
-                    'title': title,
-                    'thumbnail': picker_items[0].get('thumb') or thumbnail if picker_items else thumbnail,
-                    'duration': None,
-                    'uploader': 'ReelFetch Carousel',
-                    'url': picker_items[0].get('url') if picker_items else None,
-                    'formats': formats
-                }
+                    item_url = item.get('url')
+                    if item_url:
+                        valid_formats.append({
+                            'format_id': f'item_{i}',
+                            'ext': item.get('type') or 'mp4',
+                            'resolution': f'Item {i+1} ({item.get("type", "media")})',
+                            'url': item_url,
+                            'filesize': None
+                        })
+                        
+                if valid_formats:
+                    # Verify the first item to ensure instance is unblocked
+                    try:
+                        chk_req = urllib.request.Request(valid_formats[0]['url'], headers={'User-Agent': 'Mozilla/5.0'})
+                        with urllib.request.urlopen(chk_req, timeout=4) as chk_res:
+                            first_byte = chk_res.read(1)
+                            if not first_byte:
+                                print(f"Endpoint {api} picker item 0 returned 0-byte stream, skipping.")
+                                continue
+                            print(f"Verified working picker endpoint: {api}")
+                    except Exception as verify_err:
+                        print(f"Endpoint {api} picker verification failed: {verify_err}, skipping.")
+                        continue
+
+                    return {
+                        'success': True,
+                        'title': title,
+                        'thumbnail': picker_items[0].get('thumb') or thumbnail if picker_items else thumbnail,
+                        'duration': None,
+                        'uploader': 'ReelFetch Carousel',
+                        'url': valid_formats[0]['url'],
+                        'formats': valid_formats
+                    }
                 
         except Exception as e:
             print(f"Endpoint {api} failed: {e}")
